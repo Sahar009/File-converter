@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import PyPDF2
-import document
-
+from docx import Document
 
 def convert_pdf_to_word():
     pdf_file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
@@ -10,25 +9,24 @@ def convert_pdf_to_word():
     if pdf_file_path:
         pdf_text = ""
         
-    pdf_file = open(pdf_file, 'rb')
-    pdf = PyPDF2.PdfReader(pdf_file)
+        pdf_file = open(pdf_file_path, 'rb')
+        pdf = PyPDF2.PdfReader(pdf_file)
             
-    for page_num in range(pdf.numPages):
-                page = pdf.getPage(page_num)
-                pdf_text += page.extractText()
+        for page_num in range(len(pdf.pages)):
+            page = pdf.pages[page_num]
+            pdf_text += page.extract_text()
             
-    pdf_file.close()
+        pdf_file.close()
             
-    doc = convert_pdf_to_word()
-    doc.add_paragraph(pdf_text)
+        doc = Document()
+        doc.add_paragraph(pdf_text)
             
-    word_file = pdf_file.replace(".pdf", ".docx")
-    doc.save(word_file)
+        word_file = pdf_file_path.replace(".pdf", ".docx")
+        doc.save(word_file)
             
-    result_label.config(text=f"Conversion complete. Saved as {word_file}")
-    
-    
-    result_label.config(text="Error during conversion.")
+        result_label.config(text=f"Conversion complete. Saved as {word_file}")
+    else:
+        result_label.config(text="Error during conversion.")
 
 # Create the main window
 root = tk.Tk()
